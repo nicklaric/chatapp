@@ -1,0 +1,62 @@
+FIREBASE PROJECT INFORMATION
+=========================
+
+PROJECT DETAILS:
+- Project ID: llm-group-chat
+- API Key: AIzaSyA_As1IWcs3kRoXKeTG7PNF0wxMs6_etJI
+- Auth Domain: llm-group-chat.firebaseapp.com
+- Storage Bucket: llm-group-chat.firebasestorage.app
+- Messaging Sender ID: 678550205299
+- App ID: 1:678550205299:web:8ea74ad9473e5a33dd8b06
+
+FIREBASE CONFIG OBJECT:
+```javascript
+const firebaseConfig = {
+  apiKey: "AIzaSyA_As1IWcs3kRoXKeTG7PNF0wxMs6_etJI",
+  authDomain: "llm-group-chat.firebaseapp.com",
+  projectId: "llm-group-chat",
+  storageBucket: "llm-group-chat.firebasestorage.app",
+  messagingSenderId: "678550205299",
+  appId: "1:678550205299:web:8ea74ad9473e5a33dd8b06"
+};
+```
+
+FIREBASE SERVICES NEEDED:
+- Authentication (Google Sign-in)
+- Firestore Database
+- Cloud Functions (for Gemini API integration)
+
+FIRESTORE DATABASE STRUCTURE:
+```
+chats/
+  - [chatId]/
+    - participants: array of user IDs
+    - aiParticipants: array of AI role names
+    - createdBy: user ID
+    - creatorName: display name
+    - createdAt: timestamp
+    - messages/
+      - type: "user", "ai", or "system"
+      - content: message text
+      - timestamp: timestamp
+      - sender: user ID or AI role
+      - senderName: display name
+      - isTyping: boolean (for AI typing indicators)
+      - isHidden: boolean (for hiding messages)
+```
+
+CLOUD FUNCTION: 
+Currently using Gemini API for AI responses with the Firebase Extension "Chatbot with Generative AI".
+
+NOTES ON ISSUES:
+- The main issue was with the deleteDoc function not being properly available in the Firebase services
+- As a workaround, we can use updateDoc to mark messages as hidden instead of deleting them
+- There was also an issue with the Gemini API being temporarily blocked (403 error)
+
+GENERAL PLAN FOR FRESH START:
+1. Set up a clean project structure
+2. Initialize Firebase properly
+3. Implement authentication
+4. Create the chat functionality
+5. Use updateDoc instead of deleteDoc for all document removal operations
+6. Make sure the AI integration works correctly with the Gemini API 

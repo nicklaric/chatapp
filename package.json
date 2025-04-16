@@ -1,0 +1,51 @@
+{
+  "name": "my-chat-app",
+  "version": "1.0.0",
+  "description": "An AI-enhanced group chat web application with Firebase integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "deploy": "npm run build && firebase deploy"
+  },
+  "keywords": [
+    "chat",
+    "ai",
+    "firebase",
+    "react"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "autoprefixer": "^10.4.14",
+    "firebase": "^10.0.0",
+    "postcss": "^8.4.24",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.14.0",
+    "tailwindcss": "^3.3.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "react-scripts": "5.0.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>AI Chat App - New Version</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Firebase SDK (v9 Modular) -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, updateDoc, arrayUnion, getDocs, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js";
+    
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_As1IWcs3kRoXKeTG7PNF0wxMs6_etJI",
+      authDomain: "llm-group-chat.firebaseapp.com",
+      projectId: "llm-group-chat",
+      storageBucket: "llm-group-chat.firebasestorage.app",
+      messagingSenderId: "678550205299",
+      appId: "1:678550205299:web:8ea74ad9473e5a33dd8b06"
+    };
+
+    // Initialize Firebase
+    console.log("[HTML] Initializing Firebase with NEW config...");
+    const app = initializeApp(firebaseConfig);
+    console.log("[HTML] Firebase App Initialized.");
+    
+    // Make Firebase services available globally (or pass them to app.js)
+    window.firebaseServices = {
+      auth: getAuth(app),
+      db: getFirestore(app),
+      GoogleAuthProvider,
+      signInWithPopup,
+      onAuthStateChanged,
+      signOut,
+      collection,
+      addDoc,
+      serverTimestamp,
+      query,
+      orderBy,
+      onSnapshot,
+      doc,
+      getDoc,
+      updateDoc,
+      arrayUnion,
+      getDocs,
+      limit,
+      deleteDoc
+    };
+    console.log("[HTML] Firebase services attached to window (using Popup).");
+
+  </script>
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>AI Chat App - New Version</h1>
+      <div id="user-profile">
+        <span id="user-name">Guest</span>
+        <button id="login-button" onclick="console.log('[HTML Click] Login button clicked directly from HTML');">Login with Google</button>
+        <button id="logout-button" style="display: none;">Logout</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Login Form Removed for Debugging -->
+
+      <div id="welcome-screen">
+        <h2>Welcome to AI Chat</h2>
+        <p>Please log in to start chatting.</p> 
+        <div class="action-buttons" style="display: none;"> <!-- Hide buttons until logged in -->
+          <button id="create-chat-button">Create New Chat</button>
+          <button id="join-chat-button">Join Chat</button>
+        </div>
+      </div>
+
+      <div id="chat-setup" style="display: none;">
+        <h2>Chat Setup</h2>
+        <div class="ai-selection">
+          <h3>Select AI Participants</h3>
+          <div class="ai-options">
+            <div class="ai-option">
+              <input type="checkbox" id="ai-moderator" name="ai-role" value="moderator">
+              <label for="ai-moderator">Moderator</label>
+            </div>
+            <div class="ai-option">
+              <input type="checkbox" id="ai-planner" name="ai-role" value="planner">
+              <label for="ai-planner">Planner</label>
+            </div>
+            <div class="ai-option">
+              <input type="checkbox" id="ai-summarizer" name="ai-role" value="summarizer">
+              <label for="ai-summarizer">Summarizer</label>
+            </div>
+          </div>
+        </div>
+        <div class="invite-section">
+          <h3>Invite Friends (Optional)</h3>
+          <input type="email" id="invite-email" placeholder="Enter email address">
+          <button id="add-invite">Add</button>
+          <div id="invite-list"></div>
+        </div>
+        <button id="start-chat">Start Chat</button>
+      </div>
+
+      <div id="chat-room" style="display: none;">
+        <div class="chat-header">
+          <h2 id="chat-title">Chat Room</h2>
+          <button id="invite-more">Invite More</button>
+        </div>
+        <div id="messages-container"></div>
+        <div class="message-input">
+          <input type="text" id="message-input" placeholder="Type your message...">
+          <button id="send-message">Send</button>
+        </div>
+      </div>
+
+      <div id="join-form" style="display: none;">
+        <h2>Join Chat</h2>
+        <input type="text" id="chat-id" placeholder="Enter Chat ID">
+        <button id="join-chat">Join</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Use the brand new app-new.js file -->
+  <script src="js/app-new.js" type="module"></script> 
+</body>
+</html> 
