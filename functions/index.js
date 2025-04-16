@@ -21,9 +21,13 @@ const db = admin.firestore();
 let genAI;
 try {
   // Using Firebase Functions Config
-  const apiKey = process.env.GEMINI_APIKEY || "AIzaSyA_As1IWcs3kRoXKeTG7PNF0wxMs6_etJI";
-  genAI = new GoogleGenerativeAI(apiKey);
-  console.log("Google GenerativeAI initialized successfully with API key");
+  const apiKey = process.env.GEMINI_APIKEY;
+  if (!apiKey) {
+    logger.warn("GEMINI_APIKEY environment variable not set - AI features will not work");
+  } else {
+    genAI = new GoogleGenerativeAI(apiKey);
+    console.log("Google GenerativeAI initialized successfully with API key from environment");
+  }
 } catch (error) {
   logger.error("Error initializing Google GenerativeAI", error);
 }
@@ -41,7 +45,8 @@ exports.processUserMessage = onDocumentCreated(
   {
     document: "conversations/{conversationId}",
     region: "us-central1",
-    secrets: ["GEMINI_APIKEY"]
+    secrets: ["GEMINI_APIKEY"],
+    maxInstances: 10 // Limit concurrent executions
   },
   async (event) => {
     try {
@@ -52,14 +57,44 @@ exports.processUserMessage = onDocumentCreated(
       }
       
       const data = snapshot.data();
-      const { prompt, chatId, aiRole } = data;
+      const { prompt, chatId, aiRole, userId } = data;
 
+      // Check for required fields
       if (!prompt) {
         console.error("No prompt provided");
         return null;
       }
+      
+      if (!userId) {
+        console.error("No user ID provided in the request");
+        await snapshot.ref.update({
+          response: "Authentication required. Please log in to use this service.",
+          error: "Missing user authentication",
+          processedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        return null;
+      }
 
-      console.log(`Processing user message in chat ${chatId}`, { messageId: event.params.conversationId });
+      console.log(`Processing user message from user ${userId} in chat ${chatId}`, { messageId: event.params.conversationId });
+
+      // Rate limiting check - get user's requests in the last hour
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+      const recentRequests = await db.collection('conversations')
+        .where('userId', '==', userId)
+        .where('createTime', '>=', oneHourAgo)
+        .get();
+      
+      // Limit to 30 requests per hour per user
+      const MAX_REQUESTS_PER_HOUR = 30;
+      if (recentRequests.size >= MAX_REQUESTS_PER_HOUR) {
+        console.error(`Rate limit exceeded for user ${userId}: ${recentRequests.size} requests in the last hour`);
+        await snapshot.ref.update({
+          response: "You've reached your hourly limit for AI responses. Please try again later.",
+          error: "Rate limit exceeded",
+          processedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        return null;
+      }
 
       // Get API key from environment config
       const apiKey = process.env.GEMINI_APIKEY;

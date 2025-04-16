@@ -197,3 +197,70 @@ If you encounter issues during deployment:
 3. Check your Firebase project in the [Firebase Console](https://console.firebase.google.com/)
 
 4. Ensure all necessary APIs are enabled in your [Google Cloud Console](https://console.cloud.google.com/) 
+
+## Security Best Practices
+
+### Critical Security Actions Required
+
+1. **Regenerate Gemini API Key Immediately**
+   - The previous Gemini API key was exposed in Git history
+   - Generate a new key at [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Update the key in Firebase Functions config:
+     ```bash
+     firebase functions:config:set gemini.apikey=your_new_api_key
+     firebase deploy --only functions
+     ```
+
+2. **Clean Git History**
+   - The repository contains sensitive information in its history
+   - Create a fresh repository without the sensitive history:
+     ```bash
+     # Create a new branch without history
+     git checkout --orphan temp_branch
+     
+     # Add all files
+     git add -A
+     
+     # Commit
+     git commit -m "Initial commit with clean history"
+     
+     # Delete the old branch
+     git branch -D main
+     
+     # Rename the current branch to main
+     git branch -m main
+     
+     # Force push to remote repository
+     git push -f origin main
+     ```
+
+3. **Verify Firestore Rules**
+   - Ensure Firestore has proper authentication rules
+   - Default deny rule is in place
+   - All access requires authentication
+   - Run security rules tests:
+     ```bash
+     firebase emulators:start
+     # Test security rules with your test suite
+     ```
+
+4. **Enable Rate Limiting**
+   - Cloud Functions have request limits to prevent abuse
+   - Consider additional rate limiting at the application level
+   - Monitor API usage regularly
+
+5. **Secure Environment Variables**
+   - Never commit `.env` files to Git
+   - Use Firebase config for server-side secrets
+   - Use `.env.example` with placeholders for documentation
+
+### Ongoing Security Practices
+
+- **Regular Auditing**: Periodically review application security
+- **Dependency Updates**: Keep all dependencies up to date with `npm audit`
+- **Access Control**: Regularly review who has access to your Firebase project
+- **Monitoring**: Set up alerts for unusual API usage or traffic spikes
+
+### IMPORTANT NOTICE ABOUT API KEYS
+
+**NEVER commit API keys or secrets to Git!** Even if you later remove them, they remain in the repository history and can be easily extracted. Always use environment variables or secure secret management solutions. 
