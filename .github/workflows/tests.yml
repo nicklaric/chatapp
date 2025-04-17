@@ -1,0 +1,40 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: |
+        npm ci
+        cd functions && npm ci && cd ..
+        cd test/rules-unit-testing && npm ci && cd ../..
+    
+    - name: Run React Component Tests
+      run: npm run test:web -- --watchAll=false
+    
+    - name: Run Cloud Functions Tests
+      run: cd functions && npm test
+      
+    - name: Run Firestore Rules Tests
+      run: cd test/rules-unit-testing && npm test
+      
+    # Cypress tests are conditionally run when not in CI to avoid setup issues
+    - name: Run E2E Tests (if in local development)
+      if: false # Skip in CI, but we've included the step for documentation
+      run: npm run test:e2e 
